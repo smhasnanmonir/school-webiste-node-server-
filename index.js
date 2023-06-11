@@ -39,9 +39,17 @@ async function run() {
     const classCollection = client
       .db("summerSchool")
       .collection("classCollection");
+    const teacherCollection = client
+      .db("summerSchool")
+      .collection("teacherCollection");
 
     app.get("/classes", async (req, res) => {
       const classes = await classCollection.find().toArray();
+      res.send(classes);
+    });
+
+    app.get("/instructors", async (req, res) => {
+      const classes = await teacherCollection.find().toArray();
       res.send(classes);
     });
   } finally {
