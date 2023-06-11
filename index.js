@@ -39,18 +39,39 @@ async function run() {
     const classCollection = client
       .db("summerSchool")
       .collection("classCollection");
+
     const teacherCollection = client
       .db("summerSchool")
       .collection("teacherCollection");
 
+    const usersCollection = client
+      .db("summerSchool")
+      .collection("usersCollection");
+    //get class collection from database
     app.get("/classes", async (req, res) => {
       const classes = await classCollection.find().toArray();
       res.send(classes);
     });
-
+    //get instructors from database
     app.get("/instructors", async (req, res) => {
       const classes = await teacherCollection.find().toArray();
       res.send(classes);
+    });
+    //get user from database
+    app.get("/users", async (req, res) => {
+      const classes = await teacherCollection.find().toArray();
+      res.send(classes);
+    });
+    //add user in database
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email };
+      const oldUser = await usersCollection.findOne(query);
+      if (oldUser) {
+        return;
+      }
+      const newUser = await usersCollection.insertOne(user);
+      res.send(newUser);
     });
   } finally {
     // Ensures that the client will close when you finish/error
