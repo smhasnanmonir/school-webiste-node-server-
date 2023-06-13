@@ -55,12 +55,21 @@ async function run() {
       const classes = await classCollection.find().toArray();
       res.send(classes);
     });
+    //get classes by id
     app.get("/classes/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await classCollection.findOne(query);
       res.send(result);
     });
+
+    //post a class
+    app.post("/classes", async (req, res) => {
+      const items = req.body;
+      const result = await classCollection.insertOne(items);
+      res.send(result);
+    });
+
     //get instructors from database
     app.get("/instructors", async (req, res) => {
       const classes = await teacherCollection.find().toArray();
@@ -74,13 +83,6 @@ async function run() {
       const result = await usersCollection.findOne(query);
       res.send(result);
     });
-
-    // app.get("/users/role", async (req, res) => {
-    //   const email = req.query.email;
-    //   const query = { email: email };
-    //   const result = await usersCollection.find(query).toArray();
-    //   res.send(result);
-    // });
 
     //get user from database
     app.get("/users", async (req, res) => {
@@ -112,7 +114,6 @@ async function run() {
     // add product to cart collection
     app.post("/carts", async (req, res) => {
       const items = req.body;
-      console.log(items);
       const result = await cartCollection.insertOne(items);
       res.send(result);
     });
