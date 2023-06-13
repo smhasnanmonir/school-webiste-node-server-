@@ -55,6 +55,15 @@ async function run() {
       const classes = await classCollection.find().toArray();
       res.send(classes);
     });
+
+    //get instructors class from class collection
+    app.get("/classes/email", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await classCollection.find(query).toArray();
+      res.send(result);
+    });
+
     //get classes by id
     app.get("/classes/:id", async (req, res) => {
       const id = req.params.id;
@@ -67,14 +76,6 @@ async function run() {
     app.post("/classes", async (req, res) => {
       const items = req.body;
       const result = await classCollection.insertOne(items);
-      res.send(result);
-    });
-
-    //get instructors class from class collection
-    app.get("/classes", async (req, res) => {
-      const email = req.query.email;
-      const query = { email: email };
-      const result = await cartCollection.find(query).toArray();
       res.send(result);
     });
 
