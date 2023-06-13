@@ -70,6 +70,14 @@ async function run() {
       res.send(result);
     });
 
+    //get instructors class from class collection
+    app.get("/classes", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await cartCollection.find(query).toArray();
+      res.send(result);
+    });
+
     //get instructors from database
     app.get("/instructors", async (req, res) => {
       const classes = await teacherCollection.find().toArray();
