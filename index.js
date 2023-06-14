@@ -5,7 +5,9 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 require("dotenv").config();
-
+const stripe = require("stripe")(
+  "sk_test_51NGwcgK1rPsA3dPJv7Q6l68B6d94IdTLsCNMEmYn6X3WiTcE8BaomRzVT1UgNq1IaejMwYf2j50nYljZBwYosOp000ylXdXmON"
+);
 app.get("/", (req, res) => {
   res.send("Boss is sitting");
 });
@@ -50,6 +52,9 @@ async function run() {
     const cartCollection = client
       .db("summerSchool")
       .collection("cartCollection");
+    const paymentCollection = client
+      .db("summerSchool")
+      .collection("paymentCollection");
     //get class collection from database
     app.get("/classes", async (req, res) => {
       const classes = await classCollection.find().toArray();
@@ -218,6 +223,42 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await cartCollection.deleteOne(query);
       res.send(result);
+    });
+
+    //paymet related
+    app.post("/create-payment-intent", async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price * 100);
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
+    app.get("/payment", async (req, res) => {
+      const result = await paymentCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/payment/email", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await paymentCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.post("/payments", async (req, res) => {
+      const payment = req.body;
+      const insertResult = await paymentCollection.insertOne(payment);
+
+      const query = {
+        _id: { $in: payment.cartItems.map((id) => new ObjectId(id)) },
+      };
+      const deleteResult = await cartCollection.deleteMany(query);
+
+      res.send({ insertResult, deleteResult });
     });
   } finally {
     // Ensures that the client will close when you finish/error
