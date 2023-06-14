@@ -149,7 +149,41 @@ async function run() {
 
     //get user from database
     app.get("/users", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/allUsers", async (req, res) => {
       const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/allUsers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+    });
+
+    //update user role
+
+    app.put("/allUsers/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedRole = req.body;
+      const setUpdatedRole = {
+        $set: {
+          role: updatedRole.role,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        query,
+        setUpdatedRole,
+        options
+      );
       res.send(result);
     });
 
