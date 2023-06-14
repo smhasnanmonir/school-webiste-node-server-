@@ -71,6 +71,25 @@ async function run() {
       const result = await classCollection.deleteOne(query);
       res.send(result);
     });
+    //update
+    app.put("/classes/email:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedClass = req.body;
+      const setUpdatedClass = {
+        $set: {
+          students: updatedClass.students,
+          price: updatedClass.price,
+        },
+      };
+      const result = await classCollection.updateOne(
+        query,
+        setUpdatedClass,
+        options
+      );
+      res.send(result);
+    });
 
     //get classes by id
     app.get("/classes/:id", async (req, res) => {
