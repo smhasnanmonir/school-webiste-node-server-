@@ -71,6 +71,13 @@ async function run() {
       const result = await classCollection.deleteOne(query);
       res.send(result);
     });
+    //get by id
+    app.get("/classes/email:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classCollection.findOne(query);
+      res.send(result);
+    });
     //update
     app.put("/classes/email:id", async (req, res) => {
       const id = req.params.id;
@@ -106,6 +113,26 @@ async function run() {
       res.send(result);
     });
 
+    //status update class
+    app.put("/classes/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedClass = req.body;
+      const setUpdatedClass = {
+        $set: {
+          status: updatedClass.status,
+          feedback: updatedClass.feedback,
+        },
+      };
+      const result = await classCollection.updateOne(
+        query,
+        setUpdatedClass,
+        options
+      );
+      res.send(result);
+    });
+
     //get instructors from database
     app.get("/instructors", async (req, res) => {
       const classes = await teacherCollection.find().toArray();
@@ -122,9 +149,7 @@ async function run() {
 
     //get user from database
     app.get("/users", async (req, res) => {
-      const email = req.query.email;
-      const query = { email: email };
-      const result = await usersCollection.find(query).toArray();
+      const result = await usersCollection.find().toArray();
       res.send(result);
     });
 
