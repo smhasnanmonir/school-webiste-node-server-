@@ -17,7 +17,7 @@ app.listen(port, () => {
 });
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pyqmcvy.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://filmSchool:eBRaUZuEhpCQeNGz@cluster0.pyqmcvy.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -31,7 +31,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -83,7 +83,7 @@ async function run() {
       const result = await classCollection.findOne(query);
       res.send(result);
     });
-    //update
+    //update classes
     app.put("/classes/email:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -160,6 +160,19 @@ async function run() {
       res.send(result);
     });
 
+    //add user in database
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email };
+      const oldUser = await usersCollection.findOne(query);
+      if (oldUser) {
+        return;
+      }
+      const newUser = await usersCollection.insertOne(user);
+      res.send(newUser);
+    });
+
     app.get("/allUsers", async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
@@ -192,17 +205,6 @@ async function run() {
       res.send(result);
     });
 
-    //add user in database
-    app.post("/users", async (req, res) => {
-      const user = req.body;
-      const query = { email: user.email };
-      const oldUser = await usersCollection.findOne(query);
-      if (oldUser) {
-        return;
-      }
-      const newUser = await usersCollection.insertOne(user);
-      res.send(newUser);
-    });
     //cart related api
     // get cart data from database
     app.get("/carts", async (req, res) => {
