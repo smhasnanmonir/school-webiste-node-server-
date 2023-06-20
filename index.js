@@ -9,7 +9,7 @@ const stripe = require("stripe")(
   "sk_test_51NGwcgK1rPsA3dPJv7Q6l68B6d94IdTLsCNMEmYn6X3WiTcE8BaomRzVT1UgNq1IaejMwYf2j50nYljZBwYosOp000ylXdXmON"
 );
 app.get("/", (req, res) => {
-  res.send("Boss is sitting");
+  res.send("School is closing!");
 });
 
 app.listen(port, () => {
